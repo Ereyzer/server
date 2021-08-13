@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 // const data = require('./info.json');
 
-const db = mongoose
+mongoose
   .connect(
     'mongodb+srv://admin:admin@cluster0.xaqqp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
     { useNewUrlParser: true },
@@ -15,7 +15,7 @@ const ElementSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  title: {
+  description: {
     type: String,
     required: true,
   },
@@ -51,25 +51,38 @@ app.get('/', (req, res) => {
     .then(elements => res.send(elements))
     .catch(e => res.send(e));
 });
+app.post('/:id', (req, res) => {
+  console.log('post:id');
+
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  console.log(req.body.data);
+  Element.findOneAndRemove({
+    _id: req.body.data,
+  }).then(console.log);
+
+  res.status(201).send(`delete: ${req.body.data}`);
+});
 
 app.post('/', (req, res) => {
   console.log('post');
 
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  mongoose.connection.collections['elements'].remove({}, function (err) {
-    console.log('collection dropped');
-  });
-  console.log(db);
+  // mongoose.connection.collections['elements'].remove({}, function (err) {
+  //   console.log('collection dropped');
+  // });
+  // console.log(db);
   const { body } = req;
   // console.log('req1', data);
-  // console.log('req2', body);
+  console.log('req2', body.data);
   const newElements = req.body.data.forEach(element => {
-    // console.log('element', element);
+    console.log('element', element.description);
+    // if (element.path) {
     Element.create({
       path: `${element.path}`,
-      title: `${element.title}`,
+      description: `${element.description}`,
     }).catch(e => console.log(e));
+    // }
   });
   // Element.create({
   //   pathEL: 'ivan',
