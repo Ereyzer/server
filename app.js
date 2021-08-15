@@ -62,34 +62,31 @@ app.post('/:id', (req, res) => {
 
   res.status(201).send(`delete: ${req.body.data}`);
 });
+// Element.where({ _id: id }).update({ title: 'words' })
 
 app.post('/', (req, res) => {
   console.log('post');
 
   res.setHeader('Access-Control-Allow-Origin', '*');
 
-  // mongoose.connection.collections['elements'].remove({}, function (err) {
-  //   console.log('collection dropped');
-  // });
-  // console.log(db);
   const { body } = req;
-  // console.log('req1', data);
-  console.log('req2', body.data);
+  // console.log('req2', body.data);
   const newElements = req.body.data.forEach(element => {
-    console.log('element', element.description);
-    // if (element.path) {
-    Element.create({
-      path: `${element.path}`,
-      description: `${element.description}`,
-    }).catch(e => console.log(e));
-    // }
+    if (element['_id']) {
+      // console.log('element with id', element);
+      Element.where({ _id: element['_id'] }).update({
+        path: element.path,
+        description: element.description,
+      });
+    } else {
+      // console.log('element', element.description);
+      Element.create({
+        path: `${element.path}`,
+        description: `${element.description}`,
+      }).catch(e => console.log(e));
+    }
   });
-  // Element.create({
-  //   pathEL: 'ivan',
-  //   title: 'not stupid',
-  // })
-  //   .then(console.log)
-  //   .catch(e => console.log(e));
+
   data.elements = newElements;
 
   res.status(201).json(req.body);
